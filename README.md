@@ -151,23 +151,23 @@ Un student solo puede inscribirse a sí mismo. Un admin puede inscribir a cualqu
 
 | Operación | `student` | `admin` |
 |-----------|-----------|---------|
-| signup / login | ✅ | ✅ |
-| Ver su propio perfil (`me`) | ✅ | ✅ |
-| Ver perfil de otro usuario | ✅ | ✅ |
-| Listar todos los usuarios | ❌ | ✅ |
-| Actualizar su propio perfil | ✅ | ✅ |
-| Actualizar perfil de otro | ❌ | ✅ |
-| Desactivar usuario | ❌ | ✅ |
-| Listar / ver cursos | ✅ | ✅ |
-| Crear curso | ❌ | ✅ |
-| Actualizar curso | ❌ | ✅ |
-| Desactivar curso | ❌ | ✅ |
-| Inscribirse a sí mismo | ✅ | ✅ |
-| Inscribir a otro usuario | ❌ | ✅ |
-| Ver sus inscripciones | ✅ | ✅ |
-| Ver inscripciones de otro | ❌ | ✅ |
-| Cancelar su inscripción | ✅ | ✅ |
-| Cancelar inscripción ajena | ❌ | ✅ |
+| signup / login | Si | Si |
+| Ver su propio perfil (`me`) | Si | Si |
+| Ver perfil de otro usuario | Si | Si |
+| Listar todos los usuarios | No | Si |
+| Actualizar su propio perfil | Si | Si |
+| Actualizar perfil de otro | No | Si |
+| Desactivar usuario | No | Si |
+| Listar / ver cursos | Si | Si |
+| Crear curso | No | Si |
+| Actualizar curso | No | Si |
+| Desactivar curso | No | Si |
+| Inscribirse a sí mismo | Si | Si |
+| Inscribir a otro usuario | No | Si |
+| Ver sus inscripciones | Si | Si |
+| Ver inscripciones de otro | No | Si |
+| Cancelar su inscripción | Si | Si |
+| Cancelar inscripción ajena | No | Si |
 
 ---
 
@@ -248,7 +248,7 @@ Crea los siguientes datos:
 - Bases de Datos Avanzadas (4 créditos)
 - Arquitectura de Software (3 créditos)
 
-> ⚠️ El seed elimina todos los datos antes de insertar. Solo usar en desarrollo.
+> El seed elimina todos los datos antes de insertar. Solo usar en desarrollo.
 
 ---
 
