@@ -59,6 +59,7 @@ type Mutation {
   removeCourse(id: ID!): Course!
   enrollUser(enrollUserInput: EnrollUserInput!): UserCourse!
   unenroll(enrollmentId: ID!): UserCourse!
+  executeSeed: String!
 }
 
 input SignUpInput {

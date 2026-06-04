@@ -23,8 +23,8 @@ export class SeedService {
 
   private async deleteTables(): Promise<void> {
     await this.courseRepository.query(`DELETE FROM users_courses`);
-    await this.courseRepository.delete({});
-    await this.userRepository.delete({});
+    await this.courseRepository.query(`DELETE FROM courses`);
+    await this.userRepository.query(`DELETE FROM users`);
   }
 
   private async insertUsers(): Promise<void> {
