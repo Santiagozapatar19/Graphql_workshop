@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'node:path';
+import { SeedModule } from './seed/seed.module.js';
 
 import { UsersModule } from './users/users.module';
 import { CoursesModule } from './courses/courses.module';
