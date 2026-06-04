@@ -1,6 +1,6 @@
 # Scholar Sync — GraphQL API
 
-**Por: Santiago Zapata Rodriguez**
+**Por: Santiago Zapata Rodriguez - Juan Pablo Sinisterra Fajardo**
 
 Migración de una API REST a **GraphQL** usando **NestJS + TypeScript + TypeORM + PostgreSQL**.
 
