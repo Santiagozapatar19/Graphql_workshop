@@ -15,6 +15,9 @@ import { CoursesModule } from './courses/courses.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      playground: false,
+      introspection: true,
+      csrfPrevention: false,
     }),
 
     // TypeORM — usa las mismas variables de entorno que el profe
