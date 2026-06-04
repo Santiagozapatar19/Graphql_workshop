@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
-import { Course } from '../courses/entities/course.entity.js';
-import { User, ValidRoles } from '../users/entities/user.entity.js';
+import { Course } from '../courses/entities/course.entity';
+import { User, ValidRoles } from '../users/entities/user.entity';
 
 @Injectable()
 export class SeedService {

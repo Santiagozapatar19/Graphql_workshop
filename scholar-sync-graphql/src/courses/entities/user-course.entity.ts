@@ -1,7 +1,7 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../../users/entities/user.entity.js';
-import { Course } from './course.entity.js';
+import { User } from '../../users/entities/user.entity';
+import { Course } from './course.entity';
 
 export enum RelationType {
 	student = 'student',

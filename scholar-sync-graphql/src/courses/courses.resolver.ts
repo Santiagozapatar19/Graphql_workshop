@@ -1,14 +1,14 @@
 import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
 
-import { Course } from './entities/course.entity.js';
-import { UserCourse } from './entities/user-course.entity.js';
+import { Course } from './entities/course.entity';
+import { UserCourse } from './entities/user-course.entity';
 import { CoursesService } from './courses.service';
 import { CreateCourseInput } from './dto/create-course.input';
 import { UpdateCourseInput } from './dto/update-course.input';
 import { EnrollUserInput } from './dto/enroll-user.input';
-import { Auth } from '../users/decorators/auth.decorator.js';
-import { CurrentUser } from '../users/decorators/current-user.decorator.js';
-import { User, ValidRoles } from '../users/entities/user.entity.js';
+import { Auth } from '../users/decorators/auth.decorator';
+import { CurrentUser } from '../users/decorators/current-user.decorator';
+import { User, ValidRoles } from '../users/entities/user.entity';
 
 @Resolver(() => Course)
 export class CoursesResolver {

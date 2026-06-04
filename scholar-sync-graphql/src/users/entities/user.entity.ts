@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { UserCourse } from '../../courses/entities/user-course.entity.js';
+import { UserCourse } from '../../courses/entities/user-course.entity';
 
 export enum ValidRoles {
   admin = 'admin',

@@ -2,14 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Course {
+type User {
   id: ID!
-  name: String!
-  description: String
-  credits: Int!
+  email: String!
+  firstName: String!
+  lastName: String!
+  roles: [String!]!
   isActive: Boolean!
-  startDate: String
-  enrollments: [UserCourse!]
 }
 
 type UserCourse {
@@ -26,13 +25,14 @@ enum RelationType {
   professor
 }
 
-type User {
+type Course {
   id: ID!
-  email: String!
-  firstName: String!
-  lastName: String!
-  roles: [String!]!
+  name: String!
+  description: String
+  credits: Int!
   isActive: Boolean!
+  startDate: String
+  enrollments: [UserCourse!]
 }
 
 type AuthResponse {
@@ -59,6 +59,7 @@ type Mutation {
   removeCourse(id: ID!): Course!
   enrollUser(enrollUserInput: EnrollUserInput!): UserCourse!
   unenroll(enrollmentId: ID!): UserCourse!
+  executeSeed: String!
 }
 
 input SignUpInput {

@@ -2,7 +2,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { gql } from './gql-helper';
+import { gql, resetDatabase } from './gql-helper';
 
 const GQL = '/graphql';
 
@@ -17,6 +17,7 @@ describe('Auth GraphQL (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
+    await resetDatabase(app);
   });
 
   afterAll(async () => {

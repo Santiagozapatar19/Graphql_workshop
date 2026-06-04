@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { DataSource } from 'typeorm';
 import { AppModule } from '../src/app.module';
-import { gql } from './gql-helper';
+import { gql, resetDatabase } from './gql-helper';
 
 const GQL = '/graphql';
 
@@ -21,6 +21,7 @@ describe('Users GraphQL (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
+    await resetDatabase(app);
 
     // Crear admin
     const adminSignup = await request(app.getHttpServer())

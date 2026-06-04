@@ -1,6 +1,6 @@
 import { Field, ID, InputType } from '@nestjs/graphql';
 import { IsEnum, IsOptional, IsUUID } from 'class-validator';
-import { RelationType } from '../entities/user-course.entity.js';
+import { RelationType } from '../entities/user-course.entity';
 
 @InputType()
 export class EnrollUserInput {

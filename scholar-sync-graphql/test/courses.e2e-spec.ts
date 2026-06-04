@@ -1,8 +1,9 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
+import { DataSource } from 'typeorm';
 import { AppModule } from '../src/app.module';
-import { gql } from './gql-helper';
+import { gql, resetDatabase } from './gql-helper';
 
 const GQL = '/graphql';
 
@@ -52,6 +53,7 @@ describe('Courses GraphQL (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
+    await resetDatabase(app);
 
     // Registrar admin (lo ponemos como admin directamente en el repo)
     await request(app.getHttpServer())
@@ -63,15 +65,11 @@ describe('Courses GraphQL (e2e)', () => {
         ),
       );
 
-    // Modificar rol directamente en BD via TypeORM
-    const dataSource = app.get('DataSource').catch?.() ?? (app as any).get?.('DataSource');
     // Usamos query directo para promover admin
-    try {
-      const conn = app.get(require('typeorm').DataSource);
-      await conn.query(
-        `UPDATE users SET roles = '{"admin"}' WHERE email = 'admin_courses@e2e.com'`,
-      );
-    } catch (_) {}
+    const conn = app.get(DataSource);
+    await conn.query(
+      `UPDATE users SET roles = '{"admin"}' WHERE email = 'admin_courses@e2e.com'`,
+    );
 
     // Login admin
     const adminRes = await request(app.getHttpServer())

@@ -7,13 +7,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Course } from './entities/course.entity.js';
-import { UserCourse } from './entities/user-course.entity.js';
+import { Course } from './entities/course.entity';
+import { UserCourse } from './entities/user-course.entity';
 import { CreateCourseInput } from './dto/create-course.input';
 import { UpdateCourseInput } from './dto/update-course.input';
 import { EnrollUserInput } from './dto/enroll-user.input';
-import { User, ValidRoles } from '../users/entities/user.entity.js';
-import { UsersService } from '../users/users.service.js';
+import { User, ValidRoles } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class CoursesService {
@@ -133,7 +133,7 @@ export class CoursesService {
       throw new ForbiddenException('You can only cancel your own enrollments');
     }
 
-    await this.userCourseRepository.remove(enrollment);
+    await this.userCourseRepository.delete(enrollment.id);
     return enrollment;
   }
 }
