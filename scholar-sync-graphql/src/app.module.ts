@@ -7,17 +7,15 @@ import { join } from 'node:path';
 
 import { UsersModule } from './users/users.module';
 import { CoursesModule } from './courses/courses.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
-
-    // TypeORM — usa las mismas variables de entorno que el profe
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -26,11 +24,11 @@ import { CoursesModule } from './courses/courses.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
-      synchronize: true, // Solo para desarrollo; en prod poner en false
+      synchronize: true,
     }),
-
     UsersModule,
     CoursesModule,
+    SeedModule,
   ],
 })
 export class AppModule {}

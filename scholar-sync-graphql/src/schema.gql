@@ -1,0 +1,104 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Course {
+  id: ID!
+  name: String!
+  description: String
+  credits: Int!
+  isActive: Boolean!
+  startDate: String
+  enrollments: [UserCourse!]
+}
+
+type UserCourse {
+  id: ID!
+  user: User!
+  course: Course!
+  relationType: RelationType!
+  enrolledAt: String!
+}
+
+enum RelationType {
+  student
+  ta
+  professor
+}
+
+type User {
+  id: ID!
+  email: String!
+  firstName: String!
+  lastName: String!
+  roles: [String!]!
+  isActive: Boolean!
+}
+
+type AuthResponse {
+  user: User!
+  token: String!
+}
+
+type Query {
+  me: User!
+  users: [User!]!
+  user(id: ID!): User!
+  courses: [Course!]!
+  course(id: ID!): Course!
+  myEnrollments(userId: ID): [UserCourse!]!
+}
+
+type Mutation {
+  signup(signUpInput: SignUpInput!): AuthResponse!
+  login(loginInput: LoginInput!): AuthResponse!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  removeUser(id: ID!): User!
+  createCourse(createCourseInput: CreateCourseInput!): Course!
+  updateCourse(updateCourseInput: UpdateCourseInput!): Course!
+  removeCourse(id: ID!): Course!
+  enrollUser(enrollUserInput: EnrollUserInput!): UserCourse!
+  unenroll(enrollmentId: ID!): UserCourse!
+}
+
+input SignUpInput {
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  id: ID!
+  email: String
+  firstName: String
+  lastName: String
+  isActive: Boolean
+}
+
+input CreateCourseInput {
+  name: String!
+  description: String
+  credits: Int = 3
+  startDate: String
+}
+
+input UpdateCourseInput {
+  id: ID!
+  name: String
+  description: String
+  credits: Int
+  isActive: Boolean
+  startDate: String
+}
+
+input EnrollUserInput {
+  courseId: ID!
+  userId: ID
+  relationType: RelationType = student
+}
