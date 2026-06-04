@@ -6,6 +6,8 @@ Migración de una API REST a **GraphQL** usando **NestJS + TypeScript + TypeORM 
 
 El proyecto toma el backend existente de Scholar Sync y lo traduce a GraphQL, manteniendo toda la lógica de negocio original pero aprovechando las ventajas de GraphQL: consultas flexibles, un único endpoint, y tipado fuerte del schema.
 
+https://graphql-workshop.onrender.com
+
 ---
 
 ## Tabla de contenidos
