@@ -38,6 +38,7 @@ import { CoursesModule } from './courses/courses.module';
 
     UsersModule,
     CoursesModule,
+    SeedModule,
   ],
 })
 export class AppModule {}
