@@ -1,0 +1,694 @@
+{
+  "info": {
+    "name": "Scholar Sync — GraphQL API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección completa para probar la API GraphQL de Scholar Sync. Importar en Postman, configurar la variable BASE_URL y ejecutar en orden."
+  },
+  "variable": [
+    { "key": "BASE_URL", "value": "http://localhost:9000/graphql" },
+    { "key": "TOKEN", "value": "" },
+    { "key": "ADMIN_TOKEN", "value": "" },
+    { "key": "COURSE_ID", "value": "" },
+    { "key": "ENROLLMENT_ID", "value": "" },
+    { "key": "USER_ID", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "01 - Signup (student)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.signup) {",
+                  "  pm.collectionVariables.set('TOKEN', res.data.signup.token);",
+                  "  pm.collectionVariables.set('USER_ID', res.data.signup.user.id);",
+                  "  pm.test('Signup OK - token recibido', () => pm.expect(res.data.signup.token).to.be.a('string'));",
+                  "  pm.test('Rol es student', () => pm.expect(res.data.signup.user.roles).to.include('student'));",
+                  "} else {",
+                  "  pm.test('Signup fallido', () => pm.expect(res.errors).to.be.undefined);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation Signup($input: SignUpInput!) { signup(signUpInput: $input) { token user { id email roles isActive } } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"student@scholar.com\",\n      \"password\": \"Password123\",\n      \"firstName\": \"Carlos\",\n      \"lastName\": \"López\"\n    }\n  }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "02 - Signup (admin — luego promover en BD)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.signup) {",
+                  "  pm.test('Admin signup OK', () => pm.expect(res.data.signup.token).to.be.a('string'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation Signup($input: SignUpInput!) { signup(signUpInput: $input) { token user { id email } } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"admin@scholar.com\",\n      \"password\": \"Admin123\",\n      \"firstName\": \"Super\",\n      \"lastName\": \"Admin\"\n    }\n  }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "03 - Login (student)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.login) {",
+                  "  pm.collectionVariables.set('TOKEN', res.data.login.token);",
+                  "  pm.test('Login OK', () => pm.expect(res.data.login.token).to.be.a('string'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation Login($input: LoginInput!) { login(loginInput: $input) { token user { id email roles } } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"student@scholar.com\",\n      \"password\": \"Password123\"\n    }\n  }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "04 - Login (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.login) {",
+                  "  pm.collectionVariables.set('ADMIN_TOKEN', res.data.login.token);",
+                  "  pm.test('Admin login OK', () => pm.expect(res.data.login.token).to.be.a('string'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation Login($input: LoginInput!) { login(loginInput: $input) { token user { id email roles } } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"admin@scholar.com\",\n      \"password\": \"Admin123\"\n    }\n  }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "05 - Login con credenciales inválidas (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Debe retornar error de credenciales', () => pm.expect(res.errors).to.not.be.undefined);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation Login($input: LoginInput!) { login(loginInput: $input) { token } }\",\n  \"variables\": {\n    \"input\": {\n      \"email\": \"student@scholar.com\",\n      \"password\": \"WrongPassword\"\n    }\n  }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "06 - Me (perfil propio)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Retorna usuario autenticado', () => pm.expect(res.data.me).to.have.property('email'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { me { id email firstName lastName roles isActive } }\"\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "07 - Me sin token (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Debe retornar Unauthorized', () => pm.expect(res.errors).to.not.be.undefined);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { me { id email } }\"\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "08 - Listar usuarios (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Admin obtiene lista de usuarios', () => pm.expect(res.data.users).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { users { id email firstName lastName roles isActive } }\"\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "09 - Listar usuarios sin ser admin (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Student no puede listar usuarios', () => pm.expect(res.errors).to.not.be.undefined);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { users { id email } }\"\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "10 - Actualizar perfil propio (student)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Perfil actualizado', () => pm.expect(res.data.updateUser).to.have.property('id'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation UpdateUser($input: UpdateUserInput!) { updateUser(updateUserInput: $input) { id firstName lastName } }\",\n  \"variables\": {\n    \"input\": {\n      \"id\": \"{{USER_ID}}\",\n      \"firstName\": \"CarlosActualizado\"\n    }\n  }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "11 - Eliminar usuario (solo admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.removeUser) {",
+                  "  pm.test('Usuario desactivado', () => pm.expect(res.data.removeUser.isActive).to.be.false);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation RemoveUser($id: ID!) { removeUser(id: $id) { id isActive } }\",\n  \"variables\": { \"id\": \"{{USER_ID}}\" }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Courses (Módulo 1)",
+      "item": [
+        {
+          "name": "12 - Crear curso (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.createCourse) {",
+                  "  pm.collectionVariables.set('COURSE_ID', res.data.createCourse.id);",
+                  "  pm.test('Curso creado', () => pm.expect(res.data.createCourse.name).to.equal('Computación en Internet III'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CreateCourse($input: CreateCourseInput!) { createCourse(createCourseInput: $input) { id name credits description isActive } }\",\n  \"variables\": {\n    \"input\": {\n      \"name\": \"Computación en Internet III\",\n      \"credits\": 3,\n      \"description\": \"Backend con GraphQL y NestJS\",\n      \"startDate\": \"2026-08-01\"\n    }\n  }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "13 - Crear curso sin ser admin (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Student no puede crear cursos', () => pm.expect(res.errors).to.not.be.undefined);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CreateCourse($input: CreateCourseInput!) { createCourse(createCourseInput: $input) { id } }\",\n  \"variables\": {\n    \"input\": { \"name\": \"Curso No Permitido\", \"credits\": 1 }\n  }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "14 - Listar cursos (autenticado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Lista de cursos recibida', () => pm.expect(res.data.courses).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { courses { id name credits description isActive startDate } }\"\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "15 - Buscar curso por id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Curso encontrado', () => pm.expect(res.data.course.id).to.equal(pm.collectionVariables.get('COURSE_ID')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query Course($id: ID!) { course(id: $id) { id name credits enrollments { id relationType user { email } } } }\",\n  \"variables\": { \"id\": \"{{COURSE_ID}}\" }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "16 - Actualizar curso (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Curso actualizado', () => pm.expect(res.data.updateCourse.name).to.equal('CI III — GraphQL Avanzado'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation UpdateCourse($input: UpdateCourseInput!) { updateCourse(updateCourseInput: $input) { id name credits } }\",\n  \"variables\": {\n    \"input\": {\n      \"id\": \"{{COURSE_ID}}\",\n      \"name\": \"CI III — GraphQL Avanzado\",\n      \"credits\": 4\n    }\n  }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "17 - Buscar curso inexistente (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Debe retornar NotFoundException', () => pm.expect(res.errors).to.not.be.undefined);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query Course($id: ID!) { course(id: $id) { id } }\",\n  \"variables\": { \"id\": \"00000000-0000-0000-0000-000000000000\" }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Enrollments (Módulo 2)",
+      "item": [
+        {
+          "name": "18 - Inscribirse en curso (student)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.enrollUser) {",
+                  "  pm.collectionVariables.set('ENROLLMENT_ID', res.data.enrollUser.id);",
+                  "  pm.test('Inscripción creada', () => pm.expect(res.data.enrollUser.relationType).to.equal('student'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation EnrollUser($input: EnrollUserInput!) { enrollUser(enrollUserInput: $input) { id relationType enrolledAt course { id name } user { id email } } }\",\n  \"variables\": {\n    \"input\": { \"courseId\": \"{{COURSE_ID}}\" }\n  }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "19 - Inscribirse dos veces en el mismo curso (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Debe retornar ConflictException', () => pm.expect(res.errors).to.not.be.undefined);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation EnrollUser($input: EnrollUserInput!) { enrollUser(enrollUserInput: $input) { id } }\",\n  \"variables\": {\n    \"input\": { \"courseId\": \"{{COURSE_ID}}\" }\n  }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "20 - Admin inscribe otro usuario como TA",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.enrollUser) {",
+                  "  pm.test('Inscripción como TA creada', () => pm.expect(res.data.enrollUser.relationType).to.equal('ta'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation EnrollUser($input: EnrollUserInput!) { enrollUser(enrollUserInput: $input) { id relationType user { email } } }\",\n  \"variables\": {\n    \"input\": {\n      \"courseId\": \"{{COURSE_ID}}\",\n      \"userId\": \"{{USER_ID}}\",\n      \"relationType\": \"ta\"\n    }\n  }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "21 - Mis inscripciones (student)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Mis inscripciones recibidas', () => pm.expect(res.data.myEnrollments).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { myEnrollments { id relationType enrolledAt course { id name credits } } }\"\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "22 - Admin consulta inscripciones de otro usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Admin obtiene enrollments de otro usuario', () => pm.expect(res.data.myEnrollments).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query MyEnrollments($userId: ID) { myEnrollments(userId: $userId) { id relationType course { name } user { email } } }\",\n  \"variables\": { \"userId\": \"{{USER_ID}}\" }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "23 - Cancelar inscripción (student)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Inscripción cancelada', () => pm.expect(res.data.unenroll.id).to.equal(pm.collectionVariables.get('ENROLLMENT_ID')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation Unenroll($id: ID!) { unenroll(enrollmentId: $id) { id } }\",\n  \"variables\": { \"id\": \"{{ENROLLMENT_ID}}\" }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "24 - Cancelar inscripción inexistente (error esperado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Debe retornar NotFoundException', () => pm.expect(res.errors).to.not.be.undefined);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation Unenroll($id: ID!) { unenroll(enrollmentId: $id) { id } }\",\n  \"variables\": { \"id\": \"00000000-0000-0000-0000-000000000000\" }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        },
+        {
+          "name": "25 - Eliminar curso (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Curso desactivado', () => pm.expect(res.data.removeCourse.isActive).to.be.false);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation RemoveCourse($id: ID!) { removeCourse(id: $id) { id isActive } }\",\n  \"variables\": { \"id\": \"{{COURSE_ID}}\" }\n}"
+            },
+            "url": "{{BASE_URL}}"
+          }
+        }
+      ]
+    }
+  ]
+}
